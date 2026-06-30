@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>Próximos partidos Mundial 2026</title>
+
+    <!-- Open Sans: ExtraBold 800 y Bold 700 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@700;800&display=swap" rel="stylesheet" />
+
+    <style>
+      :root {
+        --stage-w: 1793px;
+        --stage-h: 2051px;
+        --blue: #2a39d4;
+        --white: #ffffff;
+        --font: "Open Sans", Arial, Helvetica, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: #000;
+        font-family: var(--font);
+      }
+
+      body {
+        position: fixed;
+        inset: 0;
+      }
+
+      .stage {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+
+        width: var(--stage-w);
+        height: var(--stage-h);
+
+        overflow: hidden;
+        background: #000;
+        transform-origin: center center;
+      }
+
+      .stage video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 0;
+      }
+
+      .overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        pointer-events: none;
+      }
+
+      .team {
+        position: absolute;
+        left: 456px;
+        width: 830px;
+        height: 237px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 12px;
+        color: var(--blue);
+        font-family: var(--font);
+        font-weight: 800;
+        font-size: 130px;
+        line-height: 0.95;
+        letter-spacing: -0.6px;
+        text-align: center;
+        text-transform: uppercase;
+        white-space: normal;
+        overflow: hidden;
+      //  background-color: #000;
+      }
+
+      .team-a {
+        top: 614px;
+      }
+
+      .team-b {
+        top: 1080px;
+      }
+
+      .date {
+   //     background-color: #000;
+        position: absolute;
+        left: 557px;
+        top: 1490px;
+        width: 677px;
+        height: 156px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-family: var(--font);
+        font-weight: 715;
+        font-size: 100px;
+        line-height: 1;
+        letter-spacing: -0.1px;
+        text-align: center;
+        text-transform: uppercase;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+        overflow: hidden;
+        white-space: nowrap;
+      }
+
+      .time {
+  //      background-color: #000;
+        position: absolute;
+        left: 727px;
+        top: 1646px;
+        width: 338px;
+        height: 78px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        color: var(--white);
+        font-family: var(--font);
+        font-weight: 691;
+        font-size: 63px;
+        line-height: 1;
+        letter-spacing: -0.1px;
+        text-align: center;
+        text-transform: uppercase;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+
+      .status {
+        position: absolute;
+        right: 18px;
+        bottom: 8px;
+        max-width: 190px;
+        padding: 4px 7px;
+        border-radius: 6px;
+        background: rgba(0, 0, 0, 0.45);
+        color: var(--white);
+        font: 700 1px/1.15 var(--font);
+        text-align: right;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+      }
+
+      .status.is-visible {
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="stage" aria-label="Próximos partidos Mundial 2026">
+      <section class="overlay" aria-live="polite">
+        <div id="equipoA" class="team team-a">Cargando</div>
+        <div id="equipoB" class="team team-b">Partidos</div>
+        <div id="fecha" class="date">--</div>
+        <div id="hora" class="time">--</div>
+        <div id="status" class="status"></div>
+      </section>
+      <video src="./fondo.mp4" autoplay muted loop playsinline preload="auto"></video>
+    </main>
+
+    <script>
+      const APPS_SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbzzvEL___3_3GWX47kdmVmkGX14WaOM3ZZpIkfkFa1mZ0zC2JwU55vFYgQqp1PXVSQG6g/exec";
+      const ROTATION_MS = 5000;
+      const REFRESH_MS = 5 * 60 * 1000;
+
+      const els = {
+        equipoA: document.getElementById("equipoA"),
+        equipoB: document.getElementById("equipoB"),
+        fecha: document.getElementById("fecha"),
+        hora: document.getElementById("hora"),
+        status: document.getElementById("status")
+      };
+
+      let matches = [];
+      let currentIndex = 0;
+      let rotationTimer = null;
+      let refreshTimer = null;
+
+      function normalizeKey(key) {
+        return String(key || "")
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/\s+/g, " ")
+          .trim()
+          .toUpperCase();
+      }
+
+      function pick(row, possibleKeys) {
+        if (!row || typeof row !== "object") return "";
+        const map = Object.create(null);
+        Object.keys(row).forEach((key) => {
+          map[normalizeKey(key)] = row[key];
+        });
+        for (const key of possibleKeys) {
+          const value = map[normalizeKey(key)];
+          if (value !== undefined && value !== null && String(value).trim() !== "") return value;
+        }
+        return "";
+      }
+
+      function serialDateToDate(serial) {
+        // Google Sheets date serial: days since 1899-12-30.
+        const utcDays = Math.floor(Number(serial) - 25569);
+        const utcValue = utcDays * 86400;
+        const dateInfo = new Date(utcValue * 1000);
+        return Number.isNaN(dateInfo.getTime()) ? null : dateInfo;
+      }
+
+      function formatDate(value) {
+        if (value === undefined || value === null || String(value).trim() === "") return "--";
+
+        if (typeof value === "number" && value > 1) {
+          const d = serialDateToDate(value);
+          if (d)
+            return new Intl.DateTimeFormat("es-CO", { day: "2-digit", month: "short", year: "numeric" })
+              .format(d)
+              .replace(".", "");
+        }
+
+        const raw = String(value).trim();
+        const d = new Date(raw);
+        if (!Number.isNaN(d.getTime()) && /\d{4}-\d{2}-\d{2}|T\d{2}:\d{2}/.test(raw)) {
+          return new Intl.DateTimeFormat("es-CO", { day: "2-digit", month: "short", year: "numeric" })
+            .format(d)
+            .replace(".", "");
+        }
+
+        return raw;
+      }
+
+      function formatTime(value) {
+        if (value === undefined || value === null || String(value).trim() === "") return "--";
+
+        if (typeof value === "number") {
+          if (value > 0 && value < 1) {
+            const totalMinutes = Math.round(value * 24 * 60);
+            const hours = Math.floor(totalMinutes / 60) % 24;
+            const minutes = totalMinutes % 60;
+            return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+          }
+          return String(value);
+        }
+
+        const raw = String(value).trim();
+        const d = new Date(raw);
+        if (!Number.isNaN(d.getTime()) && /T\d{2}:\d{2}|\d{4}-\d{2}-\d{2}/.test(raw)) {
+          return new Intl.DateTimeFormat("es-CO", { hour: "2-digit", minute: "2-digit", hour12: false }).format(d);
+        }
+
+        return raw;
+      }
+
+      function getComparableDate(match) {
+        const dateText = String(match.fechaRaw || "").trim();
+        const timeText = String(match.horaRaw || "").trim();
+        const parsed = new Date(`${dateText} ${timeText}`);
+        return Number.isNaN(parsed.getTime()) ? null : parsed;
+      }
+
+      function normalizeRows(payload) {
+        const source = Array.isArray(payload)
+          ? payload
+          : Array.isArray(payload?.data)
+            ? payload.data
+            : Array.isArray(payload?.rows)
+              ? payload.rows
+              : [];
+
+        return source
+          .map((row) => {
+            if (Array.isArray(row)) {
+              return {
+                equipoA: row[0] || "",
+                equipoB: row[1] || "",
+                fechaRaw: row[2] || "",
+                horaRaw: row[3] || ""
+              };
+            }
+
+            return {
+              equipoA: pick(row, ["EQUIPO A", "EQUIPOA", "LOCAL", "TEAM A"]),
+              equipoB: pick(row, ["EQUIPO B", "EQUIPOB", "VISITANTE", "TEAM B"]),
+              fechaRaw: pick(row, ["FECHA", "DATE"]),
+              horaRaw: pick(row, ["HORA", "TIME"])
+            };
+          })
+          .filter((match) => match.equipoA && match.equipoB)
+          .map((match) => ({
+            ...match,
+            equipoA: String(match.equipoA).trim(),
+            equipoB: String(match.equipoB).trim(),
+            fecha: formatDate(match.fechaRaw),
+            hora: formatTime(match.horaRaw),
+            comparableDate: getComparableDate(match)
+          }));
+      }
+
+      function sortUpcoming(rows) {
+        const now = new Date();
+        const withDates = rows.filter((row) => row.comparableDate && row.comparableDate >= now);
+        const withoutDates = rows.filter((row) => !row.comparableDate);
+
+        const base = withDates.length ? withDates : rows;
+        return base
+          .slice()
+          .sort((a, b) => {
+            if (!a.comparableDate || !b.comparableDate) return 0;
+            return a.comparableDate - b.comparableDate;
+          })
+          .concat(withDates.length ? withoutDates : []);
+      }
+
+      function showStatus(message) {
+        els.status.textContent = message;
+        els.status.classList.add("is-visible");
+        window.clearTimeout(showStatus.timer);
+        showStatus.timer = window.setTimeout(() => els.status.classList.remove("is-visible"), 4500);
+      }
+
+      function fitText(el, maxSize, minSize) {
+        el.style.fontSize = `${maxSize}px`;
+        let size = maxSize;
+        while ((el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight) && size > minSize) {
+          size -= 1;
+          el.style.fontSize = `${size}px`;
+        }
+      }
+
+      function renderMatch(match) {
+        if (!match) {
+          els.equipoA.textContent = "Sin datos";
+          els.equipoB.textContent = "Disponibles";
+          els.fecha.textContent = "--";
+          els.hora.textContent = "--";
+          return;
+        }
+
+        els.equipoA.textContent = match.equipoA;
+        els.equipoB.textContent = match.equipoB;
+        els.fecha.textContent = match.fecha;
+        els.hora.textContent = match.hora;
+
+        fitText(els.equipoA, 130, 60);
+        fitText(els.equipoB, 130, 60);
+        fitText(els.fecha, 100, 50);
+        fitText(els.hora, 63, 30);
+      }
+
+      function startRotation() {
+        window.clearInterval(rotationTimer);
+        currentIndex = 0;
+        renderMatch(matches[currentIndex]);
+
+        if (matches.length > 1) {
+          rotationTimer = window.setInterval(() => {
+            currentIndex = (currentIndex + 1) % matches.length;
+            renderMatch(matches[currentIndex]);
+          }, ROTATION_MS);
+        }
+      }
+
+      async function loadMatches() {
+        try {
+          const url = `${APPS_SCRIPT_URL}${APPS_SCRIPT_URL.includes("?") ? "&" : "?"}_=${Date.now()}`;
+          const response = await fetch(url, { cache: "no-store" });
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+
+          const payload = await response.json();
+          matches = sortUpcoming(normalizeRows(payload));
+          startRotation();
+
+          if (!matches.length) {
+            showStatus("La hoja no devolvió partidos válidos.");
+          }
+        } catch (error) {
+          console.error("Error cargando partidos:", error);
+          showStatus("No se pudo leer la hoja de cálculo. Revisa permisos, CORS y JSON.");
+          renderMatch(null);
+        }
+      }
+      const DESIGN_WIDTH = 1793;
+      const DESIGN_HEIGHT = 2051;
+
+      function scaleStage() {
+        const stage = document.querySelector(".stage");
+
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        const scale = Math.max(viewportWidth / DESIGN_WIDTH, viewportHeight / DESIGN_HEIGHT);
+
+        stage.style.transform = `translate(-50%, -50%) scale(${scale})`;
+      }
+
+      window.addEventListener("resize", scaleStage);
+      window.addEventListener("orientationchange", scaleStage);
+      window.addEventListener("load", scaleStage);
+
+      scaleStage();
+      loadMatches();
+      refreshTimer = window.setInterval(loadMatches, REFRESH_MS);
+    </script>
+  </body>
+</html>
