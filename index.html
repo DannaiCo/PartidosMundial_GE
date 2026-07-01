@@ -17,8 +17,8 @@
             --blue: #2a39d4;
             --white: #ffffff;
             --font: "Open Sans", Arial, Helvetica, sans-serif;
-            --text-x-fix: 1.08;
-            --text-y-fix: 0.56;
+            --text-x-fix: 1.12;
+            --text-y-fix: 0.66;
           }
 
           * {
@@ -180,10 +180,12 @@
         "https://script.google.com/macros/s/AKfycbzzvEL___3_3GWX47kdmVmkGX14WaOM3ZZpIkfkFa1mZ0zC2JwU55vFYgQqp1PXVSQG6g/exec";
       const ROTATION_MS = 5000;
       const REFRESH_MS = 5 * 60 * 1000;
+      const TEXT_SCALE_X = 1.12;
+      const TEXT_SCALE_Y = 0.66;
       const TEXT_FIT = {
-        team: { hardMax: 170, maxByHeight: 1.02, minByHeight: 0.32 },
-        date: { hardMax: 118, maxByHeight: 0.82, minByHeight: 0.34 },
-        time: { hardMax: 74, maxByHeight: 0.95, minByHeight: 0.38 }
+        team: { hardMax: 300, maxByHeight: 1.45, minByHeight: 0.5 },
+        date: { hardMax: 190, maxByHeight: 1.25, minByHeight: 0.45 },
+        time: { hardMax: 120, maxByHeight: 1.35, minByHeight: 0.5 }
       };
 
       const els = {
@@ -351,7 +353,10 @@
 
         el.style.fontSize = `${size}px`;
 
-        while ((el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight) && size > min) {
+        while (
+          (el.scrollWidth * TEXT_SCALE_X > el.clientWidth || el.scrollHeight * TEXT_SCALE_Y > el.clientHeight) &&
+          size > min
+        ) {
           size = Math.max(size - step, min);
           el.style.fontSize = `${size}px`;
           if (size === min) break;
