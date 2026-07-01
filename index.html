@@ -11,157 +11,148 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@700;800&display=swap" rel="stylesheet" />
 
     <style>
-      :root {
-        --stage-w: 1793px;
-        --stage-h: 2051px;
-        --blue: #2a39d4;
-        --white: #ffffff;
-        --font: "Open Sans", Arial, Helvetica, sans-serif;
-      }
+          :root {
+            --stage-w: 1792px;
+            --stage-h: 2050px;
+            --blue: #2a39d4;
+            --white: #ffffff;
+            --font: "Open Sans", Arial, Helvetica, sans-serif;
+          }
 
-      * {
-        box-sizing: border-box;
-      }
+          * {
+            box-sizing: border-box;
+          }
 
-      html,
-      body {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        background: #000;
-        font-family: var(--font);
-      }
+          html,
+          body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #000;
+            font-family: var(--font);
+          }
 
-      body {
-        position: fixed;
-        inset: 0;
-      }
+          body {
+            position: relative;
+          }
 
-      .stage {
-        position: absolute;
-        left: 50%;
-        top: 50%;
+          .stage {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #000;
+          }
 
-        width: var(--stage-w);
-        height: var(--stage-h);
+          .stage video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: fill;
+            z-index: 0;
+          }
 
-        overflow: hidden;
-        background: #000;
-        transform-origin: center center;
-      }
+          .overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+          }
 
-      .stage video {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        z-index: 0;
-      }
+          .team {
+            position: absolute;
+            left: 25.43%;
+            width: 46.29%;
+            height: 11.56%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 min(0.67vw, 0.59vh);
+            color: var(--blue);
+            font-family: var(--font);
+            font-weight: 800;
+            font-size: min(7.25vw, 6.34vh);
+            line-height: 0.95;
+            letter-spacing: 0;
+            text-align: center;
+            text-transform: uppercase;
+            white-space: normal;
+            overflow: hidden;
+          }
 
-      .overlay {
-        position: absolute;
-        inset: 0;
-        z-index: 2;
-        pointer-events: none;
-      }
+          .team-a {
+            top: 29.94%;
+          }
 
-      .team {
-        position: absolute;
-        left: 456px;
-        width: 830px;
-        height: 237px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0 12px;
-        color: var(--blue);
-        font-family: var(--font);
-        font-weight: 800;
-        font-size: 130px;
-        line-height: 0.95;
-        letter-spacing: -0.6px;
-        text-align: center;
-        text-transform: uppercase;
-        white-space: normal;
-        overflow: hidden;
-      //  background-color: #000;
-      }
+          .team-b {
+            top: 52.66%;
+          }
 
-      .team-a {
-        top: 614px;
-      }
+          .date {
+            position: absolute;
+            left: 31.06%;
+            top: 72.65%;
+            width: 37.76%;
+            height: 7.61%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-family: var(--font);
+            font-weight: 715;
+            font-size: min(5.58vw, 4.88vh);
+            line-height: 1;
+            letter-spacing: 0;
+            text-align: center;
+            text-transform: uppercase;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+            overflow: hidden;
+            white-space: nowrap;
+          }
 
-      .team-b {
-        top: 1080px;
-      }
+          .time {
+            position: absolute;
+            left: 40.55%;
+            top: 80.25%;
+            width: 18.85%;
+            height: 3.8%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            color: var(--white);
+            font-family: var(--font);
+            font-weight: 691;
+            font-size: min(3.51vw, 3.07vh);
+            line-height: 1;
+            letter-spacing: 0;
+            text-align: center;
+            text-transform: uppercase;
+            overflow: hidden;
+            white-space: nowrap;
+          }
 
-      .date {
-   //     background-color: #000;
-        position: absolute;
-        left: 557px;
-        top: 1490px;
-        width: 677px;
-        height: 156px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--white);
-        font-family: var(--font);
-        font-weight: 715;
-        font-size: 100px;
-        line-height: 1;
-        letter-spacing: -0.1px;
-        text-align: center;
-        text-transform: uppercase;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
-        overflow: hidden;
-        white-space: nowrap;
-      }
+          .status {
+            position: absolute;
+            right: 18px;
+            bottom: 8px;
+            max-width: 190px;
+            padding: 4px 7px;
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.45);
+            color: var(--white);
+            font: 700 1px/1.15 var(--font);
+            text-align: right;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+          }
 
-      .time {
-  //      background-color: #000;
-        position: absolute;
-        left: 727px;
-        top: 1646px;
-        width: 338px;
-        height: 78px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 999px;
-        color: var(--white);
-        font-family: var(--font);
-        font-weight: 691;
-        font-size: 63px;
-        line-height: 1;
-        letter-spacing: -0.1px;
-        text-align: center;
-        text-transform: uppercase;
-        overflow: hidden;
-        white-space: nowrap;
-      }
-
-      .status {
-        position: absolute;
-        right: 18px;
-        bottom: 8px;
-        max-width: 190px;
-        padding: 4px 7px;
-        border-radius: 6px;
-        background: rgba(0, 0, 0, 0.45);
-        color: var(--white);
-        font: 700 1px/1.15 var(--font);
-        text-align: right;
-        opacity: 0;
-        transition: opacity 0.25s ease;
-      }
-
-      .status.is-visible {
-        opacity: 0;
-      }
+          .status.is-visible {
+            opacity: 0;
+          }
     </style>
   </head>
   <body>
@@ -181,6 +172,8 @@
         "https://script.google.com/macros/s/AKfycbzzvEL___3_3GWX47kdmVmkGX14WaOM3ZZpIkfkFa1mZ0zC2JwU55vFYgQqp1PXVSQG6g/exec";
       const ROTATION_MS = 5000;
       const REFRESH_MS = 5 * 60 * 1000;
+      const DESIGN_WIDTH = 1792;
+      const DESIGN_HEIGHT = 2050;
 
       const els = {
         equipoA: document.getElementById("equipoA"),
@@ -336,12 +329,22 @@
         showStatus.timer = window.setTimeout(() => els.status.classList.remove("is-visible"), 4500);
       }
 
+      function getViewportScale() {
+        return Math.min(window.innerWidth / DESIGN_WIDTH, window.innerHeight / DESIGN_HEIGHT) || 1;
+      }
+
       function fitText(el, maxSize, minSize) {
-        el.style.fontSize = `${maxSize}px`;
-        let size = maxSize;
-        while ((el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight) && size > minSize) {
-          size -= 1;
+        const scale = getViewportScale();
+        const min = Math.max(minSize * scale, 1);
+        let size = Math.max(maxSize * scale, min);
+        const step = Math.max(scale, 0.5);
+
+        el.style.fontSize = `${size}px`;
+
+        while ((el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight) && size > min) {
+          size = Math.max(size - step, min);
           el.style.fontSize = `${size}px`;
+          if (size === min) break;
         }
       }
 
@@ -400,25 +403,22 @@
           renderMatch(null);
         }
       }
-      const DESIGN_WIDTH = 1793;
-      const DESIGN_HEIGHT = 2051;
-
-      function scaleStage() {
-        const stage = document.querySelector(".stage");
-
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-
-        const scale = Math.max(viewportWidth / DESIGN_WIDTH, viewportHeight / DESIGN_HEIGHT);
-
-        stage.style.transform = `translate(-50%, -50%) scale(${scale})`;
+      function refitVisibleText() {
+        fitText(els.equipoA, 130, 60);
+        fitText(els.equipoB, 130, 60);
+        fitText(els.fecha, 100, 50);
+        fitText(els.hora, 63, 30);
       }
 
-      window.addEventListener("resize", scaleStage);
-      window.addEventListener("orientationchange", scaleStage);
-      window.addEventListener("load", scaleStage);
+      window.addEventListener("resize", refitVisibleText);
+      window.addEventListener("orientationchange", refitVisibleText);
+      window.addEventListener("load", refitVisibleText);
 
-      scaleStage();
+      if (document.fonts?.ready) {
+        document.fonts.ready.then(refitVisibleText);
+      }
+
+      refitVisibleText();
       loadMatches();
       refreshTimer = window.setInterval(loadMatches, REFRESH_MS);
     </script>
