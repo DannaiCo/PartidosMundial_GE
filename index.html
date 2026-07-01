@@ -17,6 +17,8 @@
             --blue: #2a39d4;
             --white: #ffffff;
             --font: "Open Sans", Arial, Helvetica, sans-serif;
+            --text-x-fix: 1.08;
+            --text-y-fix: 0.56;
           }
 
           * {
@@ -64,23 +66,25 @@
 
           .team {
             position: absolute;
-            left: 25.43%;
-            width: 46.29%;
-            height: 11.56%;
+            left: 20.5%;
+            width: 59%;
+            height: 12%;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0 min(0.67vw, 0.59vh);
+            padding: 0 1.2%;
             color: var(--blue);
             font-family: var(--font);
             font-weight: 800;
-            font-size: min(7.25vw, 6.34vh);
-            line-height: 0.95;
+            font-size: clamp(20px, min(8.5vw, 7.5vh), 170px);
+            line-height: 0.9;
             letter-spacing: 0;
             text-align: center;
             text-transform: uppercase;
-            white-space: normal;
+            white-space: nowrap;
             overflow: hidden;
+            transform: scaleX(var(--text-x-fix)) scaleY(var(--text-y-fix));
+            transform-origin: center center;
           }
 
           .team-a {
@@ -93,9 +97,9 @@
 
           .date {
             position: absolute;
-            left: 31.06%;
+            left: 26%;
             top: 72.65%;
-            width: 37.76%;
+            width: 48%;
             height: 7.61%;
             display: flex;
             align-items: center;
@@ -103,7 +107,7 @@
             color: var(--white);
             font-family: var(--font);
             font-weight: 715;
-            font-size: min(5.58vw, 4.88vh);
+            font-size: clamp(18px, min(6.3vw, 5.5vh), 118px);
             line-height: 1;
             letter-spacing: 0;
             text-align: center;
@@ -111,13 +115,15 @@
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
             overflow: hidden;
             white-space: nowrap;
+            transform: scaleX(var(--text-x-fix)) scaleY(var(--text-y-fix));
+            transform-origin: center center;
           }
 
           .time {
             position: absolute;
-            left: 40.55%;
+            left: 35%;
             top: 80.25%;
-            width: 18.85%;
+            width: 30%;
             height: 3.8%;
             display: flex;
             align-items: center;
@@ -126,13 +132,15 @@
             color: var(--white);
             font-family: var(--font);
             font-weight: 691;
-            font-size: min(3.51vw, 3.07vh);
+            font-size: clamp(14px, min(4.2vw, 3.7vh), 74px);
             line-height: 1;
             letter-spacing: 0;
             text-align: center;
             text-transform: uppercase;
             overflow: hidden;
             white-space: nowrap;
+            transform: scaleX(var(--text-x-fix)) scaleY(var(--text-y-fix));
+            transform-origin: center center;
           }
 
           .status {
@@ -172,8 +180,11 @@
         "https://script.google.com/macros/s/AKfycbzzvEL___3_3GWX47kdmVmkGX14WaOM3ZZpIkfkFa1mZ0zC2JwU55vFYgQqp1PXVSQG6g/exec";
       const ROTATION_MS = 5000;
       const REFRESH_MS = 5 * 60 * 1000;
-      const DESIGN_WIDTH = 1792;
-      const DESIGN_HEIGHT = 2050;
+      const TEXT_FIT = {
+        team: { hardMax: 170, maxByHeight: 1.02, minByHeight: 0.32 },
+        date: { hardMax: 118, maxByHeight: 0.82, minByHeight: 0.34 },
+        time: { hardMax: 74, maxByHeight: 0.95, minByHeight: 0.38 }
+      };
 
       const els = {
         equipoA: document.getElementById("equipoA"),
@@ -329,15 +340,14 @@
         showStatus.timer = window.setTimeout(() => els.status.classList.remove("is-visible"), 4500);
       }
 
-      function getViewportScale() {
-        return Math.min(window.innerWidth / DESIGN_WIDTH, window.innerHeight / DESIGN_HEIGHT) || 1;
-      }
-
-      function fitText(el, maxSize, minSize) {
-        const scale = getViewportScale();
-        const min = Math.max(minSize * scale, 1);
-        let size = Math.max(maxSize * scale, min);
-        const step = Math.max(scale, 0.5);
+      function fitText(el, settings) {
+        const boxHeight = Math.max(el.clientHeight, 1);
+        const hardMax = settings.hardMax || boxHeight;
+        const maxByHeight = settings.maxByHeight || 0.9;
+        const minByHeight = settings.minByHeight || 0.35;
+        const min = Math.max(boxHeight * minByHeight, 1);
+        let size = Math.max(Math.min(hardMax, boxHeight * maxByHeight), min);
+        const step = Math.max(size / 70, 0.5);
 
         el.style.fontSize = `${size}px`;
 
@@ -362,10 +372,10 @@
         els.fecha.textContent = match.fecha;
         els.hora.textContent = match.hora;
 
-        fitText(els.equipoA, 130, 60);
-        fitText(els.equipoB, 130, 60);
-        fitText(els.fecha, 100, 50);
-        fitText(els.hora, 63, 30);
+        fitText(els.equipoA, TEXT_FIT.team);
+        fitText(els.equipoB, TEXT_FIT.team);
+        fitText(els.fecha, TEXT_FIT.date);
+        fitText(els.hora, TEXT_FIT.time);
       }
 
       function startRotation() {
@@ -404,10 +414,10 @@
         }
       }
       function refitVisibleText() {
-        fitText(els.equipoA, 130, 60);
-        fitText(els.equipoB, 130, 60);
-        fitText(els.fecha, 100, 50);
-        fitText(els.hora, 63, 30);
+        fitText(els.equipoA, TEXT_FIT.team);
+        fitText(els.equipoB, TEXT_FIT.team);
+        fitText(els.fecha, TEXT_FIT.date);
+        fitText(els.hora, TEXT_FIT.time);
       }
 
       window.addEventListener("resize", refitVisibleText);
