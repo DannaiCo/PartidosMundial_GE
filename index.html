@@ -17,8 +17,8 @@
             --blue: #2a39d4;
             --white: #ffffff;
             --font: "Open Sans", Arial, Helvetica, sans-serif;
-            --text-x-fix: 1.12;
-            --text-y-fix: 0.66;
+            --text-x-fix: 1;
+            --text-y-fix: 0.72;
           }
 
           * {
@@ -66,13 +66,13 @@
 
           .team {
             position: absolute;
-            left: 20.5%;
-            width: 59%;
-            height: 12%;
+            left: 8%;
+            width: 84%;
+            height: 15%;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0 1.2%;
+            padding: 0;
             color: var(--blue);
             font-family: var(--font);
             font-weight: 800;
@@ -82,17 +82,17 @@
             text-align: center;
             text-transform: uppercase;
             white-space: nowrap;
-            overflow: hidden;
+            overflow: visible;
             transform: scaleX(var(--text-x-fix)) scaleY(var(--text-y-fix));
             transform-origin: center center;
           }
 
           .team-a {
-            top: 29.94%;
+            top: 28.44%;
           }
 
           .team-b {
-            top: 52.66%;
+            top: 51.16%;
           }
 
           .date {
@@ -180,10 +180,10 @@
         "https://script.google.com/macros/s/AKfycbzzvEL___3_3GWX47kdmVmkGX14WaOM3ZZpIkfkFa1mZ0zC2JwU55vFYgQqp1PXVSQG6g/exec";
       const ROTATION_MS = 5000;
       const REFRESH_MS = 5 * 60 * 1000;
-      const TEXT_SCALE_X = 1.12;
-      const TEXT_SCALE_Y = 0.66;
+      const TEXT_SCALE_X = 1;
+      const TEXT_SCALE_Y = 0.72;
       const TEXT_FIT = {
-        team: { hardMax: 300, maxByHeight: 1.45, minByHeight: 0.5 },
+        team: { hardMax: 420, maxByHeight: 1.75, minByHeight: 0.75, widthScale: 0.62 },
         date: { hardMax: 190, maxByHeight: 1.25, minByHeight: 0.45 },
         time: { hardMax: 120, maxByHeight: 1.35, minByHeight: 0.5 }
       };
@@ -347,6 +347,7 @@
         const hardMax = settings.hardMax || boxHeight;
         const maxByHeight = settings.maxByHeight || 0.9;
         const minByHeight = settings.minByHeight || 0.35;
+        const widthScale = settings.widthScale || TEXT_SCALE_X;
         const min = Math.max(boxHeight * minByHeight, 1);
         let size = Math.max(Math.min(hardMax, boxHeight * maxByHeight), min);
         const step = Math.max(size / 70, 0.5);
@@ -354,7 +355,7 @@
         el.style.fontSize = `${size}px`;
 
         while (
-          (el.scrollWidth * TEXT_SCALE_X > el.clientWidth || el.scrollHeight * TEXT_SCALE_Y > el.clientHeight) &&
+          (el.scrollWidth * widthScale > el.clientWidth || el.scrollHeight * TEXT_SCALE_Y > el.clientHeight) &&
           size > min
         ) {
           size = Math.max(size - step, min);
